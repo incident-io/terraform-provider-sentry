@@ -17,6 +17,28 @@ import (
 	"github.com/samber/lo"
 )
 
+// newAssignedToTargetIdentifier encodes the target id of an `assigned_to`
+// condition. Sentry compares a Member or Team target against integer assignee
+// ids, so those are sent as numbers. Unassigned has no target, but the API
+// still requires the field, so it is sent as the empty string.
+func newAssignedToTargetIdentifier(targetType apiclient.OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType, targetID string) (apiclient.OrganizationWorkflowActionFilterConditionAssignedTo_Comparison_TargetIdentifier, error) {
+	var out apiclient.OrganizationWorkflowActionFilterConditionAssignedTo_Comparison_TargetIdentifier
+
+	switch targetType {
+	case apiclient.OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeMember,
+		apiclient.OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeTeam:
+		id, err := strconv.ParseInt(targetID, 10, 64)
+		if err != nil {
+			return out, fmt.Errorf("target_id must be a numeric id when target_type is %s, got %q", targetType, targetID)
+		}
+
+		return out, out.FromOrganizationWorkflowActionFilterConditionAssignedToComparisonTargetIdentifier1(id)
+
+	default:
+		return out, out.FromOrganizationWorkflowActionFilterConditionAssignedToComparisonTargetIdentifier0("")
+	}
+}
+
 func (r *AlertResource) getActionFilters(ctx context.Context, data AlertResourceModel) ([]apiclient.OrganizationWorkflowActionFilter, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
@@ -61,17 +83,16 @@ func (r *AlertResource) getActionFilters(ctx context.Context, data AlertResource
 
 				var outAssignedTo apiclient.OrganizationWorkflowActionFilterConditionAssignedTo
 				outAssignedTo.Comparison.TargetType = apiclient.OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType(inAssignedTo.TargetType.Get())
+				var targetID string
 				if inAssignedTo.TargetId.IsKnown() {
-					if err := outAssignedTo.Comparison.TargetIdentifier.FromOrganizationWorkflowActionFilterConditionAssignedToComparisonTargetIdentifier0(inAssignedTo.TargetId.Get()); err != nil {
-						diags.AddError("Failed to create condition", err.Error())
-						return nil, diags
-					}
-				} else {
-					if err := outAssignedTo.Comparison.TargetIdentifier.FromOrganizationWorkflowActionFilterConditionAssignedToComparisonTargetIdentifier0(""); err != nil {
-						diags.AddError("Failed to create condition", err.Error())
-						return nil, diags
-					}
+					targetID = inAssignedTo.TargetId.Get()
 				}
+				targetIdentifier, err := newAssignedToTargetIdentifier(outAssignedTo.Comparison.TargetType, targetID)
+				if err != nil {
+					diags.AddError("Failed to create condition", err.Error())
+					return nil, diags
+				}
+				outAssignedTo.Comparison.TargetIdentifier = targetIdentifier
 				outAssignedTo.ConditionResult = true
 
 				if err := outCondition.FromOrganizationWorkflowActionFilterConditionAssignedTo(outAssignedTo); err != nil {

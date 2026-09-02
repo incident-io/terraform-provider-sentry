@@ -176,3 +176,48 @@ func TestTicketAdditionalFieldsOverwriteTypedAttribute(t *testing.T) {
 		t.Fatal("expected the validator to reject a key that collides with a dedicated attribute")
 	}
 }
+
+// TestNewAssignedToTargetIdentifier checks the JSON type of an `assigned_to`
+// target id. The API accepts a numeric id sent as a string but never matches
+// it against an assignee, and state records the same value for both since
+// `target_id` is a string attribute either way.
+func TestNewAssignedToTargetIdentifier(t *testing.T) {
+	for _, tt := range []struct {
+		name       string
+		targetType apiclient.OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType
+		targetID   string
+		want       string
+		wantErr    bool
+	}{
+		{name: "team", targetType: "Team", targetID: "4505449279324160", want: "4505449279324160"},
+		{name: "member", targetType: "Member", targetID: "12345", want: "12345"},
+		// Sentry has no string-identified assignee, so a non-numeric id is a
+		// configuration error, reported rather than sent as a value that never
+		// matches.
+		{name: "team with a slug", targetType: "Team", targetID: "response", wantErr: true},
+		// Unassigned has no target.
+		{name: "unassigned", targetType: "Unassigned", want: `""`},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := newAssignedToTargetIdentifier(tt.targetType, tt.targetID)
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("expected an error for %s/%q", tt.targetType, tt.targetID)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("newAssignedToTargetIdentifier(%s, %q): %v", tt.targetType, tt.targetID, err)
+			}
+
+			encoded, err := json.Marshal(got)
+			if err != nil {
+				t.Fatalf("marshal: %v", err)
+			}
+
+			if string(encoded) != tt.want {
+				t.Fatalf("targetIdentifier for %s/%q = %s, want %s", tt.targetType, tt.targetID, encoded, tt.want)
+			}
+		})
+	}
+}
