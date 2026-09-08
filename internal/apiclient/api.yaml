@@ -3217,7 +3217,7 @@ components:
             targetType:
               type: string
               enum:
-                - NoOne
+                - Unassigned
                 - Member
                 - Team
             targetIdentifier:

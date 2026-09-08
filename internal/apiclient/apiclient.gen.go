@@ -126,19 +126,19 @@ func (e OrganizationWorkflowActionFilterActionEmailConfigTargetType) Valid() boo
 
 // Defines values for OrganizationWorkflowActionFilterActionEmailDataFallthroughType.
 const (
-	OrganizationWorkflowActionFilterActionEmailDataFallthroughTypeActiveMembers OrganizationWorkflowActionFilterActionEmailDataFallthroughType = "ActiveMembers"
-	OrganizationWorkflowActionFilterActionEmailDataFallthroughTypeAllMembers    OrganizationWorkflowActionFilterActionEmailDataFallthroughType = "AllMembers"
-	OrganizationWorkflowActionFilterActionEmailDataFallthroughTypeNoOne         OrganizationWorkflowActionFilterActionEmailDataFallthroughType = "NoOne"
+	ActiveMembers OrganizationWorkflowActionFilterActionEmailDataFallthroughType = "ActiveMembers"
+	AllMembers    OrganizationWorkflowActionFilterActionEmailDataFallthroughType = "AllMembers"
+	NoOne         OrganizationWorkflowActionFilterActionEmailDataFallthroughType = "NoOne"
 )
 
 // Valid indicates whether the value is a known member of the OrganizationWorkflowActionFilterActionEmailDataFallthroughType enum.
 func (e OrganizationWorkflowActionFilterActionEmailDataFallthroughType) Valid() bool {
 	switch e {
-	case OrganizationWorkflowActionFilterActionEmailDataFallthroughTypeActiveMembers:
+	case ActiveMembers:
 		return true
-	case OrganizationWorkflowActionFilterActionEmailDataFallthroughTypeAllMembers:
+	case AllMembers:
 		return true
-	case OrganizationWorkflowActionFilterActionEmailDataFallthroughTypeNoOne:
+	case NoOne:
 		return true
 	default:
 		return false
@@ -519,9 +519,9 @@ func (e OrganizationWorkflowActionFilterConditionAgeComparisonType) Valid() bool
 
 // Defines values for OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType.
 const (
-	OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeMember OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType = "Member"
-	OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeNoOne  OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType = "NoOne"
-	OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeTeam   OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType = "Team"
+	OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeMember     OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType = "Member"
+	OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeTeam       OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType = "Team"
+	OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeUnassigned OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType = "Unassigned"
 )
 
 // Valid indicates whether the value is a known member of the OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType enum.
@@ -529,9 +529,9 @@ func (e OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetType)
 	switch e {
 	case OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeMember:
 		return true
-	case OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeNoOne:
-		return true
 	case OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeTeam:
+		return true
+	case OrganizationWorkflowActionFilterConditionAssignedToComparisonTargetTypeUnassigned:
 		return true
 	default:
 		return false
